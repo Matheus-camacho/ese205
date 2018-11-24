@@ -12,7 +12,23 @@ import time
 from collections import deque
 import numpy as np
 
+import smbus
+import time
+# for RPI version 1, use  ^ ^ bus = smbus.SMBus(0) ^ ^
+bus = smbus.SMBus(1)
 
+# This is the address we setup in the Arduino Program
+address = 0x04
+
+def writeNumber(value):
+  bus.write_byte(address, value)
+  # bus.write_byte_data(address, 0, value)
+  return -1
+
+def readNumber():
+  number = bus.read_byte(address)
+  # number = bus.read_byte_data(address, 1)
+  return number
 class PiVideoStream:
 	def __init__(self, resolution=(320, 240), framerate=32):
 		# initialize the camera and stream
@@ -172,7 +188,11 @@ while True:
 			cv2.circle(frame, (int(x), int(y)), int(radius),
 				(0, 255, 255), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
- 
+			print(center)
+			writeNumber(1)
+			time.sleep(2)
+			number=readNumber()
+			writeNumber(53+int(54*(center[0]/600)))
 	# update the points queue
 	pts.appendleft(center)
 	# loop over the set of tracked points
